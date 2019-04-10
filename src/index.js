@@ -162,6 +162,9 @@ export default function ({types: t}) {
     }
 
     function referencesImport(path, mod, importedNames) {
+        if(importedNames.hasOwnProperty("defineMessages")){
+            return true
+        }
         if (!(path.isIdentifier() || path.isJSXIdentifier())) {
             return false;
         }
@@ -327,7 +330,7 @@ export default function ({types: t}) {
                     tagAsExtracted(messageObj);
                 }
 
-                if (referencesImport(callee, moduleSourceName, FUNCTION_NAMES)) {
+                if (referencesImport(callee, "./localization/index", FUNCTION_NAMES)) {
                     const messagesObj = path.get('arguments')[0];
 
                     assertObjectExpression(messagesObj);
