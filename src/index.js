@@ -5,7 +5,7 @@
  */
 
 import * as p from 'path';
-import {writeFileSync} from 'fs';
+import {writeFileSync, accessSync} from 'fs';
 import {sync as mkdirpSync} from 'mkdirp';
 import printICUMessage from './print-icu-message';
 
@@ -25,8 +25,21 @@ const EXTRACTED = Symbol('ReactIntlExtracted');
 const MESSAGES  = Symbol('ReactIntlMessages');
 
 export default function ({types: t}) {
+
+    function isPackageInstalled(packageName){
+        try{
+          accessSync(`./node_modules/${packageName}`);
+          return true
+        }catch(err){
+          return false
+        }
+      
+      }
     function getModuleSourceName(opts) {
-        return opts.moduleSourceName || 'react-intl';
+        if(isPackageInstalled("react-intl")){
+            return "react-intl"
+        }
+        return opts.moduleSourceName || 'ouisys-clients/dist/clients/common-components/Intl';
     }
 
     function evaluatePath(path) {
@@ -330,7 +343,7 @@ export default function ({types: t}) {
                     tagAsExtracted(messageObj);
                 }
 
-                if (referencesImport(callee, "./localization/index", FUNCTION_NAMES)) {
+                if (referencesImport(callee, moduleSourceName, FUNCTION_NAMES)) {
                     const messagesObj = path.get('arguments')[0];
 
                     assertObjectExpression(messagesObj);
